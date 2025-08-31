@@ -55,7 +55,7 @@ const YourTravlink = () => {
       links: travlink.links,
       profilePicture: travlink.profilePicture || "", // 👈 ab sirf URL jayega
     });
-
+console.log("Submitting travlink:", travlink);  
     try {
       let response;
       if (isEditing && editId) {
@@ -149,6 +149,7 @@ const YourTravlink = () => {
         const result = await res.json();
         if (res.ok) {
           settravlink({ ...travlink, profilePicture: result.url }); // 👈 URL save
+           console.log("Cloudinary URL:", result.url);
         } else {
           alert("Upload failed");
         }
