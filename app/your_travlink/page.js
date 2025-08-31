@@ -15,6 +15,7 @@ const YourTravlink = () => {
   const [allTravlinks, setAllTravlinks] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const fileinputref = useRef(null);
 
   const addNewLink = () => {
@@ -55,7 +56,7 @@ const YourTravlink = () => {
       links: travlink.links,
       profilePicture: travlink.profilePicture || "", // 👈 ab sirf URL jayega
     });
-console.log("Submitting travlink:", travlink);  
+    console.log("Submitting travlink:", travlink);
     try {
       let response;
       if (isEditing && editId) {
@@ -121,7 +122,8 @@ console.log("Submitting travlink:", travlink);
   };
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text)
+    navigator.clipboard
+      .writeText(text)
       .then(() => {
         alert("Link copied to clipboard!");
       })
@@ -131,36 +133,39 @@ console.log("Submitting travlink:", travlink);
   };
 
   // ✅ Cloudinary Upload Handler
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+const handleFileUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64Data = reader.result;
+  setUploading(true); // Uploading start
 
-      try {
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ data: base64Data }),
-        });
+  const reader = new FileReader();
+  reader.onloadend = async () => {
+    const base64Data = reader.result;
 
-        const result = await res.json();
-        if (res.ok) {
-          settravlink({ ...travlink, profilePicture: result.url }); // 👈 URL save
-           console.log("Cloudinary URL:", result.url);
-        } else {
-          alert("Upload failed");
-        }
-      } catch (err) {
-        console.error("Upload error", err);
-        alert("Something went wrong during upload");
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: base64Data }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        settravlink(prev => ({ ...prev, profilePicture: result.url })); // Functional update
+        console.log("Cloudinary URL:", result.url);
+      } else {
+        alert("Upload failed");
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.error("Upload error", err);
+      alert("Something went wrong during upload");
+    }
+    setUploading(false); // Uploading end
   };
-
+  reader.readAsDataURL(file);
+};
   return (
     <>
       <Navbar />
@@ -170,13 +175,16 @@ console.log("Submitting travlink:", travlink);
         </h1>
         <div className="flex flex-col md:flex-row justify-center items-center gap-10 px-1.5 md:px-10 pb-10">
           <div className=" p-4 w-[90%] md:w-[40vw] min-h-[50%] md:min-h-[60vh] border-[1px] rounded-[6px] md:rounded-xl flex flex-col gap-2 md:gap-4">
-            
             {/* Handle Input */}
             <div className="flex flex-col gap-2">
-              <span className="font-semibold md:text-[16px] text-[10px]">1. handle</span>
+              <span className="font-semibold md:text-[16px] text-[10px]">
+                1. handle
+              </span>
               <input
                 value={travlink.handle}
-                onChange={(e) => settravlink({ ...travlink, handle: e.target.value })}
+                onChange={(e) =>
+                  settravlink({ ...travlink, handle: e.target.value })
+                }
                 className="border-[1px] md:text-[16px] text-[10px] rounded-full focus:outline-2 outline-blue-500 w-1/2 py-0.5 px-1 md:p-2"
                 type="text"
                 placeholder="Enter your handle"
@@ -185,10 +193,14 @@ console.log("Submitting travlink:", travlink);
 
             {/* Description */}
             <div className="flex flex-col gap-2">
-              <span className="font-semibold md:text-[16px] text-[10px]">2. Description</span>
+              <span className="font-semibold md:text-[16px] text-[10px]">
+                2. Description
+              </span>
               <input
                 value={travlink.description}
-                onChange={(e) => settravlink({ ...travlink, description: e.target.value })}
+                onChange={(e) =>
+                  settravlink({ ...travlink, description: e.target.value })
+                }
                 className="border-[1px] md:text-[16px] text-[10px] rounded-full focus:outline-2 outline-blue-500 w-full py-0.5 px-1 md:p-2"
                 type="text"
                 placeholder="Enter your description"
@@ -199,7 +211,9 @@ console.log("Submitting travlink:", travlink);
             {travlink.links.map((l, index) => (
               <div key={index} className="flex w-full gap-1.5 md:gap-2.5">
                 <div className="flex flex-col gap-2">
-                  <span className="font-semibold md:text-[16px] text-[10px]">Link {index + 1}</span>
+                  <span className="font-semibold md:text-[16px] text-[10px]">
+                    Link {index + 1}
+                  </span>
                   <input
                     value={l.link}
                     onChange={(e) => {
@@ -213,7 +227,9 @@ console.log("Submitting travlink:", travlink);
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span className="font-semibold md:text-[16px] text-[10px]">Link name {index + 1}</span>
+                  <span className="font-semibold md:text-[16px] text-[10px]">
+                    Link name {index + 1}
+                  </span>
                   <input
                     value={l.linkName}
                     onChange={(e) => {
@@ -238,7 +254,9 @@ console.log("Submitting travlink:", travlink);
 
             {/* Profile Picture Upload */}
             <div className="flex flex-col gap-2">
-              <span className="font-semibold md:text-[16px] text-[10px]">3. profile picture</span>
+              <span className="font-semibold md:text-[16px] text-[10px]">
+                3. profile picture
+              </span>
               <input
                 ref={fileinputref}
                 id="picture"
@@ -252,24 +270,32 @@ console.log("Submitting travlink:", travlink);
             <div className="w-full flex justify-center mt-4">
               <button
                 onClick={() => submitTravlink()}
+                disabled={uploading}
                 className="md:w-[200px] bg-blue-500 text-white rounded-2xl md:text-[18px] text-[10px] border-2 border-blue-700 font-semibold py-1 px-2 md:py-2 md:px-4"
               >
-                Create your Travlink
+                {uploading ? "Uploading..." : "Create your Travlink"}
               </button>
             </div>
           </div>
 
           {/* Travlink List */}
           <div className="p-1 md:p-2.5 w-[90%] md:w-[40vw] min-h-[50%] md:min-h-[60vh] border-[1px] rounded-[6px] md:rounded-xl flex flex-col">
-            <h1 className="text-lg md:text-2xl font-bold text-center my-1.5">your Travlink:</h1>
+            <h1 className="text-lg md:text-2xl font-bold text-center my-1.5">
+              your Travlink:
+            </h1>
             <div className="flex flex-col gap-4 h-[30vh] md:h-[49vh] px-1 md:px-5 overflow-y-scroll">
               {allTravlinks.length === 0 && (
                 <div className="flex items-center justify-center h-full">
-                  <p className="text-gray-500 text-[14px] md:text-2xl font-semibold">No Travlinks found!</p>
+                  <p className="text-gray-500 text-[14px] md:text-2xl font-semibold">
+                    No Travlinks found!
+                  </p>
                 </div>
               )}
               {allTravlinks.map((user, index) => (
-                <div key={index} className="flex flex-col items-start gap-1.5 border-b pb-2">
+                <div
+                  key={index}
+                  className="flex flex-col items-start gap-1.5 border-b pb-2"
+                >
                   <div className="p-1 w-full flex justify-between items-center">
                     <a
                       href={user.handle ? `${baseUrl}/${user.handle}` : "#"}
@@ -280,7 +306,9 @@ console.log("Submitting travlink:", travlink);
                       {index + 1}. {baseUrl}/{user.handle}
                     </a>
                     <IoCopyOutline
-                      onClick={() => copyToClipboard(`${baseUrl}/${user.handle}`)}
+                      onClick={() =>
+                        copyToClipboard(`${baseUrl}/${user.handle}`)
+                      }
                       className="text-gray-500 text-[14px] p-[0.3px] md:text-2xl hover:text-gray-700 cursor-pointer"
                     />
                   </div>
