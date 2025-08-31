@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { IoCopyOutline } from "react-icons/io5";
 import Navbar from "@/components/Navbar";
 
-const your_travlink = () => {
+const YourTravlink = () => {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const [travlink, settravlink] = useState({
     handle: "",
@@ -29,7 +29,6 @@ const your_travlink = () => {
       const res = await fetch("/api/link", { method: "GET" });
       const data = await res.json();
       if (data.success) {
-        console.log("GET data:", data.data);
         setAllTravlinks(data.data); // 👈 MongoDB se aaya data state me daal do
       }
     } catch (err) {
@@ -306,4 +305,4 @@ const your_travlink = () => {
   );
 };
 
-export default your_travlink;
+export default YourTravlink;

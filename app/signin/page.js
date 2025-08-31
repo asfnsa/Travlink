@@ -1,19 +1,21 @@
 "use client";
+
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
+import Image from "next/image";
 
 export default function Signin() {
   return (
     <>
-    
       <div className="flex min-h-screen md:flex-row flex-col bg-[#ffffff]">
         {/* Left Illustration */}
-        <div className="md:flex md:w-1/2 w-full justify-center items-center p-2.5 md:p-10">
-          <img
-            // src="https://img.freepik.com/premium-vector/app-development-red-concept-with-people-scene-flat-cartoon-design-employee-work_198565-3450.jpg?w=1480"
+        <div className="md:flex md:w-1/2 w-full justify-center items-center p-2.5 md:p-10 relative">
+          <Image
             src="https://img.freepik.com/free-vector/set-up-daily-schedule-abstract-concept-vector-illustration-quarantine-daily-routine-schedule-your-day-staying-home-self-organization-pandemic-set-up-study-calendar-abstract-metaphor_335657-4132.jpg?t=st=1756553827~exp=1756557427~hmac=4ba204a01b71328c6ee25d9ee3e964d07fa46fd27d8d3c1305b34567dd78d333&w=1480"
             alt="Shopping Illustration"
-            className="w-[100%] h-auto"
+            fill
+            priority
+            className="object-contain"
           />
         </div>
 
@@ -27,9 +29,8 @@ export default function Signin() {
               Get Sign In to your account
             </p>
 
-            {/* Google + Facebook */}
+            {/* Google Button */}
             <div className="flex flex-col mt-1 md:mt-6">
-              {/* Google */}
               <button
                 onClick={() => signIn("google", { callbackUrl: "/" })}
                 className="flex items-center justify-center text-[10px] md:text-[20px] gap-1 md:gap-3 border rounded-lg py-2 font-medium hover:bg-gray-50"

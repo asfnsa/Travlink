@@ -2,20 +2,14 @@
 import Navbar from "../components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { useSession, signIn, signOut } from "next-auth/react";
-import {
-  FaFacebookF,
-  FaYoutube,
-  FaTiktok,
-  FaQrcode,
-  FaUser,
-} from "react-icons/fa";
-
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Home() {
   const { data: session } = useSession();
   const router = useRouter();
+
   const handleYourTravlink = () => {
     if (session) {
       router.push("/your_travlink"); // agar login hai → redirect
@@ -23,6 +17,7 @@ export default function Home() {
       router.push("/signin"); // agar login nahi hai → signin page open
     }
   };
+
   return (
     <>
       <Navbar />
@@ -52,49 +47,61 @@ export default function Home() {
               </Link>
             </div>
           </div>
+
           {/* Right: Persona Example */}
           <div className="flex-1 flex justify-center animate-fadeUp">
             <div className="relative w-[120px] h-[200px] md:w-[390px] md:h-[480px] bg-white rounded-xl md:rounded-3xl shadow-xl overflow-hidden flex flex-col items-center p-1.5 md:p-6">
               {/* Background Images */}
-              <img
+              <Image
                 src="https://cdn.prod.website-files.com/666255f7f2126f4e8cec6f8f/6691a78938ec5512f11e20ff_6690ad3b0f5a04cb6cc2b7f1_bg%202.webp"
                 alt="Persona bg placeholder"
-                className="absolute inset-0 w-full h-full object-cover opacity-60"
+                fill
+                sizes="200px"
+                className="absolute inset-0 object-cover opacity-60"
                 style={{ zIndex: 1 }}
               />
-              <img
+              <Image
                 src="https://cdn.prod.website-files.com/666255f7f2126f4e8cec6f8f/66917b1fff58a30cb42e6f0d_bg.webp"
                 alt="Persona bg"
-                className="absolute inset-0 w-full h-full object-cover opacity-80"
+                fill
+                sizes="200px"
+                className="absolute inset-0 object-cover opacity-80"
                 style={{ zIndex: 2 }}
               />
+
               {/* Persona Item */}
               <div className="absolute left-2 md:left-8 top-16 md:top-24 z-10">
-                <img
+                <Image
                   src="https://cdn.prod.website-files.com/666255f7f2126f4e8cec6f8f/66917b378e8ba98d79979aca_item-1.webp"
                   alt="Persona item"
+                  width={40}
+                  height={40}
                   className="w-6 h-6 md:w-12 md:h-12"
                 />
               </div>
+
               {/* Avatar */}
               <div className="relative z-20 mt-8 mb-4">
-                <img
+                <Image
                   src="https://cdn.prod.website-files.com/666255f7f2126f4e8cec6f8f/66918ab0cb2cafecf967e408_avatar.webp"
                   alt="Avatar"
+                  width={96}
+                  height={96}
                   className="md:w-24 md:h-24 w-12 h-12 rounded-full border-4 border-white shadow-lg object-cover"
                 />
               </div>
+
               {/* Links */}
               <div className="relative z-20 flex flex-col gap-3 w-full mt-4">
                 <a
                   href="#"
-                  className=" text-[8px] md:text-[16px] block w-full text-center py-0.5 md:py-2 rounded-[4px] md:rounded-lg bg-purple-100 text-purple-700 font-medium hover:bg-purple-200 transition"
+                  className="text-[8px] md:text-[16px] block w-full text-center py-0.5 md:py-2 rounded-[4px] md:rounded-lg bg-purple-100 text-purple-700 font-medium hover:bg-purple-200 transition"
                 >
                   Youtube
                 </a>
                 <a
                   href="#"
-                  className=" text-[8px] md:text-[16px] block w-full text-center py-0.5 md:py-2 rounded-[4px] md:rounded-lg bg-purple-100 text-purple-700 font-medium hover:bg-purple-200 transition"
+                  className="text-[8px] md:text-[16px] block w-full text-center py-0.5 md:py-2 rounded-[4px] md:rounded-lg bg-purple-100 text-purple-700 font-medium hover:bg-purple-200 transition"
                 >
                   Website
                 </a>
@@ -105,17 +112,20 @@ export default function Home() {
                   Spotify
                 </a>
               </div>
-              {/* Social Icons */}
             </div>
           </div>
         </div>
       </section>
-      <div className="flex flex-row">
-        <div className="md:w-1/2 flex justify-center items-center p-1.5 md:p-4">
-          <img
-            className="w-[120px] h-[160px] md:w-full md:h-full object-cover"
+
+      {/* Bottom Section */}
+      <div className="flex flex-row md:m-10">
+        <div className="md:w-1/2 w-1/2 flex justify-center items-center p-1.5 md:p-4 relative">
+          <Image
             src="https://img.freepik.com/premium-vector/analyzing-data-isolated-cartoon-vector-illustrations_107173-21472.jpg?w=1060"
-            alt=""
+            alt="Illustration"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover rounded-lg"
           />
         </div>
 
@@ -142,7 +152,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-       <Footer />
+      <Footer />
     </>
   );
 }
