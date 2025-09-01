@@ -10,7 +10,7 @@ const YourTravlink = () => {
     description: "",
     links: [],
     linkName: "",
-    profilePicture: "", // 👈 ab yaha sirf Cloudinary ka URL aayega
+    profilePicture: "",
   });
   const [allTravlinks, setAllTravlinks] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -18,13 +18,15 @@ const YourTravlink = () => {
   const [uploading, setUploading] = useState(false);
   const fileinputref = useRef(null);
 
+  // Add new link
   const addNewLink = () => {
-    settravlink({
-      ...travlink,
-      links: [...travlink.links, { link: "", linkName: "" }],
-    });
+    settravlink(prev => ({
+      ...prev,
+      links: [...prev.links, { link: "", linkName: "" }],
+    }));
   };
 
+  // Fetch all travlinks
   const fetchTravlinks = async () => {
     try {
       const res = await fetch("/api/link", { method: "GET" });
@@ -40,7 +42,7 @@ const YourTravlink = () => {
     fetchTravlinks();
   }, []);
 
-  // ✅ Submit function same hi rahega
+  // Submit handler
   const submitTravlink = async () => {
     if (!travlink.handle.trim()) {
       alert("Handle name is required!");
@@ -54,7 +56,7 @@ const YourTravlink = () => {
       handle: travlink.handle,
       description: travlink.description || "",
       links: travlink.links,
-      profilePicture: travlink.profilePicture || "", // 👈 ab sirf URL jayega
+      profilePicture: travlink.profilePicture || "",
     });
     console.log("Submitting travlink:", travlink);
     try {
@@ -93,6 +95,7 @@ const YourTravlink = () => {
     }
   };
 
+  // Delete handler
   const deleteTravlink = async (id, handle) => {
     const confirmDelete = confirm(
       `Are you sure you want to permanently delete ${handle}?`
@@ -110,6 +113,7 @@ const YourTravlink = () => {
     }
   };
 
+  // Edit handler
   const editTravlink = (user) => {
     settravlink({
       handle: user.handle,
@@ -121,6 +125,7 @@ const YourTravlink = () => {
     setEditId(user._id);
   };
 
+  // Copy to clipboard
   const copyToClipboard = (text) => {
     navigator.clipboard
       .writeText(text)
@@ -132,40 +137,41 @@ const YourTravlink = () => {
       });
   };
 
-  // ✅ Cloudinary Upload Handler
-const handleFileUpload = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  // Cloudinary Upload Handler
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  setUploading(true); // Uploading start
+    setUploading(true);
 
-  const reader = new FileReader();
-  reader.onloadend = async () => {
-    const base64Data = reader.result;
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64Data = reader.result;
 
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: base64Data }),
-      });
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data: base64Data }),
+        });
 
-      const result = await res.json();
+        const result = await res.json();
 
-      if (res.ok) {
-        settravlink(prev => ({ ...prev, profilePicture: result.url })); // Functional update
-        console.log("Cloudinary URL:", result.url);
-      } else {
-        alert("Upload failed");
+        if (res.ok) {
+          settravlink(prev => ({ ...prev, profilePicture: result.url }));
+          console.log("Cloudinary URL:", result.url);
+        } else {
+          alert("Upload failed");
+        }
+      } catch (err) {
+        console.error("Upload error", err);
+        alert("Something went wrong during upload");
       }
-    } catch (err) {
-      console.error("Upload error", err);
-      alert("Something went wrong during upload");
-    }
-    setUploading(false); // Uploading end
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
   };
-  reader.readAsDataURL(file);
-};
+
   return (
     <>
       <Navbar />
@@ -174,7 +180,7 @@ const handleFileUpload = async (e) => {
           This is your travlink page
         </h1>
         <div className="flex flex-col md:flex-row justify-center items-center gap-10 px-1.5 md:px-10 pb-10">
-          <div className=" p-4 w-[90%] md:w-[40vw] min-h-[50%] md:min-h-[60vh] border-[1px] rounded-[6px] md:rounded-xl flex flex-col gap-2 md:gap-4">
+          <div className="p-4 w-[90%] md:w-[40vw] min-h-[50%] md:min-h-[60vh] border-[1px] rounded-[6px] md:rounded-xl flex flex-col gap-2 md:gap-4">
             {/* Handle Input */}
             <div className="flex flex-col gap-2">
               <span className="font-semibold md:text-[16px] text-[10px]">
@@ -183,7 +189,7 @@ const handleFileUpload = async (e) => {
               <input
                 value={travlink.handle}
                 onChange={(e) =>
-                  settravlink({ ...travlink, handle: e.target.value })
+                  settravlink(prev => ({ ...prev, handle: e.target.value }))
                 }
                 className="border-[1px] md:text-[16px] text-[10px] rounded-full focus:outline-2 outline-blue-500 w-1/2 py-0.5 px-1 md:p-2"
                 type="text"
@@ -199,7 +205,7 @@ const handleFileUpload = async (e) => {
               <input
                 value={travlink.description}
                 onChange={(e) =>
-                  settravlink({ ...travlink, description: e.target.value })
+                  settravlink(prev => ({ ...prev, description: e.target.value }))
                 }
                 className="border-[1px] md:text-[16px] text-[10px] rounded-full focus:outline-2 outline-blue-500 w-full py-0.5 px-1 md:p-2"
                 type="text"
@@ -219,7 +225,7 @@ const handleFileUpload = async (e) => {
                     onChange={(e) => {
                       const updatedLinks = [...travlink.links];
                       updatedLinks[index].link = e.target.value;
-                      settravlink({ ...travlink, links: updatedLinks });
+                      settravlink(prev => ({ ...prev, links: updatedLinks }));
                     }}
                     className="border-[1px] md:text-[16px] text-[10px] w-[40vw] md:w-[20vw] rounded-full focus:outline-2 outline-blue-500 py-0.5 px-1 md:p-2"
                     type="text"
@@ -235,7 +241,7 @@ const handleFileUpload = async (e) => {
                     onChange={(e) => {
                       const updatedLinks = [...travlink.links];
                       updatedLinks[index].linkName = e.target.value;
-                      settravlink({ ...travlink, links: updatedLinks });
+                      settravlink(prev => ({ ...prev, links: updatedLinks }));
                     }}
                     className="border-[1px] md:w-[17vw] w-[35vw] md:text-[16px] text-[10px] rounded-full focus:outline-2 outline-blue-500 py-0.5 px-1 md:p-2"
                     type="text"
@@ -246,7 +252,7 @@ const handleFileUpload = async (e) => {
             ))}
 
             <button
-              onClick={() => addNewLink()}
+              onClick={addNewLink}
               className="w-full bg-blue-500 text-white rounded-full md:text-[18px] text-[10px] py-0.5 md:py-1.5 font-bold"
             >
               Add Link
@@ -263,13 +269,13 @@ const handleFileUpload = async (e) => {
                 className="border-[1px] md:text-[16px] text-[10px] rounded-full py-0.5 px-1 md:p-2"
                 type="file"
                 accept="image/*"
-                onChange={handleFileUpload} // 👈 Cloudinary upload call
+                onChange={handleFileUpload}
               />
             </div>
 
             <div className="w-full flex justify-center mt-4">
               <button
-                onClick={() => submitTravlink()}
+                onClick={submitTravlink}
                 disabled={uploading}
                 className="md:w-[200px] bg-blue-500 text-white rounded-2xl md:text-[18px] text-[10px] border-2 border-blue-700 font-semibold py-1 px-2 md:py-2 md:px-4"
               >
