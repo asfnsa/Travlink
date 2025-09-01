@@ -37,14 +37,12 @@ export default function Home() {
               TikTok, Twitter, YouTube and other social media profiles.
             </p>
             <div>
-              <Link href="/your_travlink">
                 <button
                   onClick={handleYourTravlink}
                   className="px-2 md:px-6 py-1 md:py-2 rounded-[5px] md:rounded-lg bg-indigo-600 text-white text-[10px] md:text-[18px] font-semibold hover:bg-indigo-700 transition"
                 >
                   try travlink
                 </button>
-              </Link>
             </div>
           </div>
 
