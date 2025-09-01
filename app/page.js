@@ -1,7 +1,6 @@
 "use client";
 import Navbar from "../components/Navbar";
 import Footer from "@/components/Footer";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
